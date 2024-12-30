@@ -29,6 +29,10 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Set SonarQube project key
+        id: project_key
+        run: echo "::set-output name=project_key::$(echo ${{ github.repository }} | tr '/' '-')"
+
       - name: SonarQube Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -37,7 +41,7 @@ jobs:
         run: |
           npm install -g sonar-scanner
           sonar-scanner \
-            -Dsonar.projectKey=${{ github.repository.replace('/', '-') }} \
+            -Dsonar.projectKey=${{ steps.project_key.outputs.project_key }} \
             -Dsonar.projectName=${{ github.repository }} \
             -Dsonar.sources=. \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
